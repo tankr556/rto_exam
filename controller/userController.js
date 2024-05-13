@@ -50,41 +50,41 @@ const userRegister = async (request, response) => {
 };
 
 
-const userLogin = async(request,response)=>{
+const userLogin = async (request, response) => {
     try {
-        let {email,password} = request.body
+        let { email, password } = request.body
 
-        let theUserObj = await userTable.findOne({email:email})
-        if(!theUserObj){
+        let theUserObj = await userTable.findOne({ email: email })
+        if (!theUserObj) {
             return response.status(401).json({
-                status : App_Status.Failed,
-                message : "Invalid Email"
+                status: App_Status.Failed,
+                message: "Invalid Email"
             })
         }
 
-        let ismatch = await bcryptjs.compare(password,theUserObj.password)
-        if(!ismatch){
+        let ismatch = await bcryptjs.compare(password, theUserObj.password)
+        if (!ismatch) {
             return response.status(401).json({
-                status : App_Status.Failed,
-                message : "Invalid Password"
+                status: App_Status.Failed,
+                message: "Invalid Password"
             })
-        } 
+        }
 
         let payload = {
-            id : theUserObj._id,
-            email : theUserObj.email,
-            password : theUserObj.password
+            id: theUserObj._id,
+            email: theUserObj.email,
+            password: theUserObj.password
         }
 
         let secretKey = process.env.SECRET_KEY
 
-        if(payload && secretKey){
-            let token = Jwt.sign(payload,secretKey,{expiresIn : "1h"})
+        if (payload && secretKey) {
+            let token = Jwt.sign(payload, secretKey, { expiresIn: "1h" })
             return response.status(200).json({
-                status : App_Status.Success,
-                message :"User Login SuccessFully",
-                data : theUserObj ,
-                token : token
+                status: App_Status.Success,
+                message: "User Login SuccessFully",
+                data: theUserObj,
+                token: token
             })
         }
     } catch (error) {

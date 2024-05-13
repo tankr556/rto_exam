@@ -38,10 +38,14 @@ const loginAdmin = async (request, response) => {
 
         if (payload && secretKey) {
             let token = JWT.sign(payload, secretKey, { expiresIn: "1h" });
+            const AdminLogin = {
+                _id: theUserObj._id,
+                email: theUserObj.email
+            }
             return response.status(200).json({
                 status: App_Status.Success,
                 message: "Admin Login Successfully",
-                data: theUserObj,
+                data: AdminLogin,
                 token: token
             });
         }
@@ -84,52 +88,91 @@ const getTestDetails = async (user) => {
     };
 }
 
+// const userlist = async (req, res) => {
+//     try {
+//         // If admin access the api
+//         if (req.isAdmin) {
+//             // Filter the user list based on query params
+//             let filter = {};
+//             if (req?.query?.id) {
+//                 filter = { _id: req?.query?.id }
+//             }
+
+//             // Find user list from database
+//             const userList = await userTable.find(filter, "userName email");
+//             // Format the user list
+//             const formattedUserList = await Promise.all(userList.map(async user => {
+//                 return await getTestDetails(user)
+//             }));
+
+//             // Return the user list
+//             res.status(200).json({
+//                 status: App_Status.Success,
+//                 message: "User list retrieved successfully",
+//                 data: formattedUserList
+//             });
+//         } else if (req?.userid === req?.query?.id) {
+//             // Find user from database
+//             const user = await userTable.findOne({ _id: req?.userid }, "userName email")?.lean();
+//             // Format the user list
+//             const formattedUserList = await getTestDetails(user)
+
+//             // Return the user list
+//             res.status(200).json({
+//                 status: App_Status.Success,
+//                 message: "User list retrieved successfully",
+//                 data: formattedUserList
+//             });
+//         } else {
+//             // If user id is not matched with params
+//             res.status(404).json({
+//                 status: App_Status.Failed,
+//                 message: "User id is not matched with params",
+//             });
+//         }
+//     } catch (error) {
+//         // Print the error
+//         console.error("Error:", error);
+//         // Return the error
+//         res.status(500).json({
+//             status: App_Status.Failed,
+//             message: "Internal Server Error",
+//             data: error
+//         });
+//     }
+// }
+
 const userlist = async (req, res) => {
+    // console.log(req);
     try {
-        // If admin access the api
-        if (req.isAdmin) {
-            // Filter the user list based on query params
-            let filter = {};
-            if (req?.query?.id) {
-                filter = { _id: req?.query?.id }
-            }
-
-            // Find user list from database
+        if (req.isAdmin || req.userid === req.query.id) {
+            const filter = req.query.id ? { _id: req.userid } : {};
+            console.log("Filter:", filter);
+            console.log("Query Parameters:", req.query);
             const userList = await userTable.find(filter, "userName email");
-            // Format the user list
-            const formattedUserList = await Promise.all(userList.map(async user => {
-                return await getTestDetails(user)
-            }));
-
-            // Return the user list
-            res.status(200).json({
-                status: App_Status.Success,
-                message: "User list retrieved successfully",
-                data: formattedUserList
-            });
-        } else if (req?.userid === req?.query?.id) {
-            // Find user from database
-            const user = await userTable.findOne({ _id: req?.userid }, "userName email")?.lean();
-            // Format the user list
-            const formattedUserList = await getTestDetails(user)
-
-            // Return the user list
-            res.status(200).json({
-                status: App_Status.Success,
-                message: "User list retrieved successfully",
-                data: formattedUserList
-            });
+            if (userList.length === 0 && req.query.id) {
+                res.status(404).json({
+                    status: App_Status.Failed,
+                    message: "User not found",
+                    data: null
+                });
+            } else {
+                const formattedUserList = await Promise.all(userList.map(getTestDetails));
+                res.status(200).json({
+                    status: App_Status.Success,
+                    message: "User list retrieved successfully",
+                    data: formattedUserList
+                });
+            }
         } else {
-            // If user id is not matched with params
             res.status(404).json({
                 status: App_Status.Failed,
                 message: "User id is not matched with params",
+                data: null
             });
         }
     } catch (error) {
-        // Print the error
         console.error("Error:", error);
-        // Return the error
         res.status(500).json({
             status: App_Status.Failed,
             message: "Internal Server Error",
@@ -139,17 +182,17 @@ const userlist = async (req, res) => {
 }
 
 
-//1.admin user na data joae shake and user potna data joae shake and userlist api ma 
-//2.admin token thi Access karshe
-//3.token thi id find karshe and admin table thi data lvshe ke admin che
-//4.user token thi access karshe
-//5.user token id find karshe and user table thi data lavshe
-
-//1.Admin can see user's data and user can see their own data and give userlist
-//2.Admin will access from token
-//3.It will find id from token and fetch data from admin table that is admin
-//4.The user will access from the token
-//5.It will find user token id and fetch data from user table
+// admin token : never give password in response
+// admin create question : only admin token can create
+// admin create test :  only admin token can create
+// Proper validation in message string
+// remove image required from modal
+// "Question updated SuccessFully",
+// - only admin token can access admin related APIs
+// - make api names appropriate- name should not indicate the action
+// - +911212121212 after reg-  it removes + sign from phon number. please solve it.
+// - test must be have atleast 2 answers to save.
+// - save test result while submitting the answers , save info in the same collection.
 
 module.exports = {
     loginAdmin,

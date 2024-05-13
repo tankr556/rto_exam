@@ -30,7 +30,7 @@ const question = async (req, resp) => {
     } = req.body;
 
     if (!option_A || !option_A_ur || !option_B || !option_B_ur) {
-        return resp.status(400).json({ 
+        return resp.status(400).json({
             Status: App_Status.Failed,
             message: "At least two options (option_A and option_B) are required",
             data: null
@@ -129,7 +129,7 @@ const editquestion = async (req, resp) => {
         theUserobj = await questionTable.findByIdAndUpdate(_id, { $set: theUserobj }, { new: true })
         return resp.status(200).json({
             status: App_Status.Success,
-            message: "Question update SuccessFully",
+            message: "Question updated SuccessFully",
             data: theUserobj
         })
     } catch (error) {

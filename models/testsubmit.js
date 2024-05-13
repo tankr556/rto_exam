@@ -3,31 +3,47 @@ const { type } = require("os");
 
 
 const testsubmitSchema = new mongoose.Schema({
-    testId :{
+    testId: {
         type: String,
-        require:true
+        require: true
     },
-    userId :{
+    userId: {
         type: String,
-        require:true
+        require: true
     },
-    questions:[{
-        _id : false,
-        questionId:{
+    questions: [{
+        _id: false,
+        questionId: {
             type: mongoose.Schema.Types.ObjectId,
-            require:true
+            require: true
         },
-        seleteOption:{
+        seleteOption: {
             type: String,
-            require:true
+            require: true
         },
         correctOption: {
             type: String,
             required: true
         },
-    }]
+    }],
+    totalQuestion: {
+        type: Number,
+        required: true
+    },
+    totalCorrectAnswer: {
+        type: Number,
+        required: true
+    },
+    totalWrongAnswer: {
+        type: Number,
+        required: true
+    },
+    percentage: {
+        type: Number,
+        required: true
+    }
 })
 
-const testsubmitTable = mongoose.model("testsubmit",testsubmitSchema);
-module.exports=testsubmitTable
+const testsubmitTable = mongoose.model("testsubmit", testsubmitSchema);
+module.exports = testsubmitTable
 

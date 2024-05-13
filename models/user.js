@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema({
         require: true
     },
     phoneNumber: {
-        type: Number,
+        type: String,
         require: true
     },
     password: {
@@ -32,6 +32,6 @@ const userSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
-const userTable = mongoose.model("user",userSchema);
+const userTable = mongoose.model("user", userSchema);
 module.exports = userTable
 

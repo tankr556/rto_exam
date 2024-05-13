@@ -8,7 +8,7 @@ const questionTable = require("../models/question");
 const test = async (req, resp) => {
     try {
         const { testName, questionId, time } = req.body;
-        if (!questionId || !Array.isArray(questionId) || questionId.length === 0) { 
+        if (!questionId || !Array.isArray(questionId) || questionId.length === 0) {
             return resp.status(400).json({
                 status: App_Status.Failed,
                 message: 'questions must be a non-empty array',
@@ -242,14 +242,14 @@ const testresult = async (req, resp) => {
             newQuestions.push({
                 questionId: question.questionId,
                 seleteOption: question.seleteOption,
-                correctOption: correctOption 
+                correctOption: correctOption
             });
         }
 
         const newUserAnswer = new testsubmitTable({
             testId,
             userId,
-            questions: newQuestions, 
+            questions: newQuestions,
         });
 
         const savedUserAnswer = await newUserAnswer.save();
